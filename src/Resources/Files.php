@@ -60,6 +60,50 @@ class Files extends Dropbox
             'mode' => 'filename'
         ]);
     }
+    /**
+     * Allows the setting of a namespace variable
+     */
+    public function uploadWH($path, $uploadPath, $mode = 'add', $namespaceId)
+    {
+        if ($uploadPath == '') {
+            throw new Exception('File is required');
+        }
+
+	    $path     = ($path !== '') ? $this->forceStartingSlash($path) : '';
+	    $contents = $this->getContents($uploadPath);
+        $filename = $this->getFilenameFromPath($uploadPath);
+        $path     = $path.$filename;
+
+        try {
+
+            $ch = curl_init('https://content.dropboxapi.com/2/files/upload');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Bearer ' . $this->getAccessToken(),
+                'Content-Type: application/octet-stream',
+                'Dropbox-API-Arg: ' .
+                    json_encode([
+                        "path" => $path,
+                        "mode" => $mode,
+                        "autorename" => true,
+                        "mute" => false
+                    ]),
+                'Dropbox-API-Path-Root: ' . json_encode([
+                    ".tag"=> "namespace_id",
+                    "namespace_id"=>$namespaceId
+                    ])
+                ]
+            ]);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $contents);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            return $response;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
 
     public function upload($path, $uploadPath, $mode = 'add')
     {
