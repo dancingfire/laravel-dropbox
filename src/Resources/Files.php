@@ -105,6 +105,32 @@ class Files extends Dropbox
         }
     }
 
+    public function download_zip($path, $namespaceId)
+    {
+        $path = $this->forceStartingSlash($path);
+
+        try {
+            $client = new Client;
+
+            $response = $client->post("https://content.dropboxapi.com/2/files/download_zip", [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                    'Dropbox-API-Arg' => json_encode([
+                        'path' => $path
+                    ],
+                    'Dropbox-API-Path-Root: ' . json_encode([
+                        ".tag"=> "namespace_id",
+                        "namespace_id"=>$namespaceId
+                        ]))
+                ]
+            ]);
+
+            return $response->getBody()->getContents();
+        } catch (Exception $e) {
+            throw new Exception($e->getResponse()->getBody()->getContents());
+        }
+    }
+
     public function upload($path, $uploadPath, $mode = 'add')
     {
         if ($uploadPath == '') {
