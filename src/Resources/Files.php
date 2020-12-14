@@ -176,11 +176,11 @@ class Files extends Dropbox
                     'Authorization' => 'Bearer ' . $this->getAccessToken(),
                     'Dropbox-API-Arg' => json_encode([
                         'path' => $path
-                    ],
+                    ]),
                     'Dropbox-API-Path-Root: ' . json_encode([
                         ".tag"=> "namespace_id",
                         "namespace_id"=>$namespaceId
-                        ]))
+                        ])
                 ]
             ]);
 
