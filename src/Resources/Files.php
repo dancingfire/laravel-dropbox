@@ -127,7 +127,7 @@ class Files extends Dropbox
 
             return $response->getBody()->getContents();
         } catch (Exception $e) {
-            throw new Exception($e->getResponse()->getBody()->getContents());
+            throw new Exception($e->getMessage());
         }
     }
 
