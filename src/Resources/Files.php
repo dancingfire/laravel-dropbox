@@ -32,6 +32,16 @@ class Files extends Dropbox
         ]);
     }
 
+    public function move($fromPath, $toPath, $autoRename = false, $allowOwnershipTransfer = false)
+    {
+        $this->post('files/move_v2', [
+            "from_path" => $fromPath,
+            "to_path" => $toPath,
+            "autorename" => $autoRename,
+            "allow_ownership_transfer" => $allowOwnershipTransfer
+        ]);
+    }
+
     public function delete($path)
     {
         $path = $this->forceStartingSlash($path);
@@ -184,9 +194,22 @@ class Files extends Dropbox
                 ]
             ]);
 
-            return $response->getBody()->getContents();
-        } catch (Exception $e) {
+            $header = json_decode($response->getHeader('Dropbox-Api-Result')[0], true);
+            $body = $response->getBody()->getContents();
+            $folder = 'dropbox-temp';
+
+            if (! is_dir($folder)) {
+                mkdir($folder);
+            }
+
+            file_put_contents($folder.$header['name'], $body);
+
+            return response()->download($folder.$header['name'], $header['name'])->deleteFileAfterSend();
+
+        } catch (ClientException $e) {
             throw new Exception($e->getResponse()->getBody()->getContents());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
 
