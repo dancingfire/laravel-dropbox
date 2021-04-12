@@ -87,11 +87,11 @@ class Files extends Dropbox
                         "autorename" => true,
                         "mute" => false
                     ]),
-                'Dropbox-API-Path-Root: ' . json_encode([
-                    ".tag"=> "namespace_id",
-                    "namespace_id"=>$namespaceId
+                'Dropbox-API-Path-Root: ' . 
+				json_encode([
+                    ".tag" => "namespace_id",
+                    "namespace_id" => $namespaceId
                     ])
-                ]
             ]);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $contents);
@@ -100,6 +100,32 @@ class Files extends Dropbox
             curl_close($ch);
 
             return $response;
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
+    public function download_zip($path, $namespaceId)
+    {
+        $path = $this->forceStartingSlash($path);
+
+        try {
+            $client = new Client;
+
+            $response = $client->post("https://content.dropboxapi.com/2/files/download_zip", [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getAccessToken(),
+                    'Dropbox-API-Arg' => json_encode([
+                        'path' => $path
+                    ]),
+                    'Dropbox-API-Path-Root: ' . json_encode([
+                        ".tag"=> "namespace_id",
+                        "namespace_id"=>$namespaceId
+                        ])
+                ]
+            ]);
+
+            return $response->getBody()->getContents();
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
