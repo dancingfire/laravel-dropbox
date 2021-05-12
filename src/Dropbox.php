@@ -120,7 +120,7 @@ class Dropbox
      */
     public function disconnect($redirectPath = '/')
     {
-        $id = auth()->id();
+        $id = 0;
 
         $client = new Client;
         $response = $client->post(self::$baseUrl.'auth/token/revoke', [
@@ -153,7 +153,7 @@ class Dropbox
         }
 
         //use id if passed otherwise use logged in user
-        $id    = auth()->id();
+        $id    = 0;
         $token = DropboxToken::where('user_id', $id)->first();
 
         // Check if tokens exist otherwise run the oauth request
@@ -205,7 +205,7 @@ class Dropbox
             return false;
         }
 
-        $id = auth()->id();
+        $id = 0;
         return DropboxToken::where('user_id', $id)->first();
     }
 
@@ -219,7 +219,7 @@ class Dropbox
      */
     protected function storeToken($token)
     {
-        $id = auth()->id();
+        $id = 0;
 
         $data = [
             'user_id'       => $id,
