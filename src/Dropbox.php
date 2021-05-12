@@ -8,7 +8,6 @@ use Dcblogdev\Dropbox\Resources\Files;
 
 use GuzzleHttp\Client;
 use Exception;
-use Session;
 
 class Dropbox
 {
@@ -73,7 +72,7 @@ class Dropbox
                 'scope' => config('dropbox.scopes'),
                 'token_access_type' => config('dropbox.accessType')
             ]);
-            Session::put("LASTURL", Request::url());
+            
             return redirect()->away($url);
         } elseif (request()->has('code')) {
 
