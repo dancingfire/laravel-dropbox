@@ -193,7 +193,7 @@ class Dropbox
         // Token is still valid, just return it
         return $token->access_token;
     }
-
+ 
     /**
      * @param  $id - integar id of user
      * @return object
